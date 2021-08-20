@@ -7,6 +7,7 @@
 #include "FPSExtractionZone.generated.h"
 
 class UBoxComponent;
+
 UCLASS()
 class FPSGAME_API AFPSExtractionZone : public AActor
 {
@@ -25,6 +26,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UBoxComponent* OverlapComp;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UDecalComponent* DecalComp;
+
 	UFUNCTION()
 	void HandleOverlap
 	(
@@ -35,5 +39,6 @@ private:
 		bool bFromSweep, 
 		const FHitResult& SweepResult
 	);
+
 
 };
