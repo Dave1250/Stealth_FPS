@@ -3,6 +3,7 @@
 #include "FPSGameMode.h"
 #include "FPSHUD.h"
 #include "FPSCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 AFPSGameMode::AFPSGameMode()
@@ -20,7 +21,28 @@ void AFPSGameMode::FinishMission(APawn* InstigatorPawn)
 	if (InstigatorPawn)
 	{
 		InstigatorPawn->DisableInput(nullptr);
+
+
+		TArray<AActor*> ReturnedViewTargets;
+		UGameplayStatics::GetAllActorsOfClass(this, ViewPointClass, ReturnedViewTargets);
+
+		//Change viewtarget to 1st valid actor's viewpoint
+		if (ReturnedViewTargets.Num() > 0)
+		{
+			AActor* NewViewTarget = ReturnedViewTargets[0];
+
+			APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
+			if (PC)
+			{
+				PC->SetViewTargetWithBlend(NewViewTarget, 1.f, EViewTargetBlendFunction::VTBlend_Cubic);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ViewPoint Class not found. Update GameMode class with valid subclass"));
+		}
 	}
 
 	OnMissionCompleted(InstigatorPawn);
+
 }

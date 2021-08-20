@@ -6,6 +6,7 @@
 #include "FPSCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/DecalComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFPSExtractionZone::AFPSExtractionZone()
@@ -38,15 +39,21 @@ void AFPSExtractionZone::BeginPlay()
 void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp,int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Escaped Zone Activated"));
-
 	AFPSCharacter* PlayerCharacter = Cast<AFPSCharacter>(OtherActor);
-	if (PlayerCharacter && PlayerCharacter->bIsCarryingObjective)
+
+	if (PlayerCharacter)
 	{
-		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
-		if (GM)
+		if (PlayerCharacter->bIsCarryingObjective)
 		{
-			GM->FinishMission(PlayerCharacter);
+			AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+			if (GM)
+			{
+				GM->FinishMission(PlayerCharacter);
+			}
+		}
+		else
+		{
+			UGameplayStatics::PlaySound2D(this, MissionNotOverSound);
 		}
 	}
 }

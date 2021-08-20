@@ -29,6 +29,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UDecalComponent* DecalComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	USoundBase* MissionNotOverSound;
+
 	UFUNCTION()
 	void HandleOverlap
 	(
