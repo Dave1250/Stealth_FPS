@@ -22,7 +22,6 @@ AFPSJumpPad::AFPSJumpPad()
 
 	OverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AFPSJumpPad::OverlapJumpPad);
 	
-
 }
 
 // Called when the game starts or when spawned
