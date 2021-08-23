@@ -33,6 +33,23 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComponent;
 
+
+	/** Fires a projectile. */
+	void Fire();
+
+	/** Handles moving forward/backward */
+	void MoveForward(float Val);
+
+	/** Handles strafing movement, left and right */
+	void MoveRight(float Val);
+
+	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+
+	void Dash();
+
+	float DashTimer;
+
+
 public:
 	AFPSCharacter();
 
@@ -51,20 +68,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	bool bIsCarryingObjective;
 
-protected:
-	
-	/** Fires a projectile. */
-	void Fire();
+	UPROPERTY(EditDefaultsOnly, Category = "Dash")
+		float DashPower = 3000.f;
 
-	/** Handles moving forward/backward */
-	void MoveForward(float Val);
+	UPROPERTY(EditDefaultsOnly, Category = "Dash")
+		float DashCD = 2.f;
 
-	/** Handles strafing movement, left and right */
-	void MoveRight(float Val);
-
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-
-public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1PComponent; }
 
