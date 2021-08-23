@@ -69,7 +69,7 @@ public:
 	bool bIsCarryingObjective;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Dash")
-		float DashPower = 3000.f;
+		float DashPower = 20.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Dash")
 		float DashCD = 2.f;

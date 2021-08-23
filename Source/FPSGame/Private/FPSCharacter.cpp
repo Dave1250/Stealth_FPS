@@ -107,12 +107,10 @@ void AFPSCharacter::MoveRight(float Value)
 
 void AFPSCharacter::Dash()
 {
-	if (GetWorld()->GetTimeSeconds() > DashTimer)
+	if (GetWorld()->GetTimeSeconds() > DashTimer && this->CanJump())
 	{
-		FRotator DashDirection = GetActorRotation();
-		FVector DashVelocity = DashDirection.Vector() * DashPower;
+		FVector DashVelocity =  this->GetVelocity() * DashPower;
 		this->LaunchCharacter(DashVelocity, true, false);
 		DashTimer = GetWorld()->GetTimeSeconds() + DashCD;
 	}
-
 }
