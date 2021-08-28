@@ -44,7 +44,7 @@ protected:
 	void MoveRight(float Val);
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-
+	
 	void Dash();
 
 	float DashTimer;
