@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "FPSGuardAI.generated.h"
 
+
+class UPawnSensingComponent;
 UCLASS()
 class FPSGAME_API AFPSGuardAI : public ACharacter
 {
@@ -15,12 +17,19 @@ public:
 	// Sets default values for this character's properties
 	AFPSGuardAI();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPawnSensingComponent* PawnSensingComp;
 
+	UFUNCTION()
+	void OnPawnSeen(APawn* SeenPawn);
+
+	UFUNCTION()
+	void OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float Volume);
 };
