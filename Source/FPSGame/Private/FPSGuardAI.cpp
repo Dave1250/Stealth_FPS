@@ -2,6 +2,7 @@
 
 
 #include "FPSGuardAI.h"
+#include "FPSGameMode.h"
 #include "DrawDebugHelpers.h"
 #include "Perception/PawnSensingComponent.h"
 
@@ -37,13 +38,18 @@ void AFPSGuardAI::OnPawnSeen(APawn* SeenPawn)
 {
 	if (SeenPawn)
 	{
-		DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 45.f, 12, FColor::Yellow, false, 5.f);
+		//DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 45.f, 12, FColor::Yellow, false, 5.f);
+		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+		if (GM)
+		{
+			GM->FinishMission(SeenPawn, false);
+		}
 	}
 }
 
 void AFPSGuardAI::OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float Volume)
 {
-	DrawDebugSphere(GetWorld(), Location, 100.f, 16, FColor::Green, false, 10.f);
+	//DrawDebugSphere(GetWorld(), Location, 100.f, 16, FColor::Green, false, 10.f);
 
 	FVector Direction = Location - GetActorLocation();
 	Direction.Normalize();

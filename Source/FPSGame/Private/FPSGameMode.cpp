@@ -16,10 +16,11 @@ AFPSGameMode::AFPSGameMode()
 	HUDClass = AFPSHUD::StaticClass();
 }
 
-void AFPSGameMode::FinishMission(APawn* InstigatorPawn)
+void AFPSGameMode::FinishMission(APawn* InstigatorPawn, bool bMissionSuccessed)
 {
 	if (InstigatorPawn)
 	{
+		InstigatorPawn->SetActorHiddenInGame(true);
 		InstigatorPawn->DisableInput(nullptr);
 
 
@@ -41,8 +42,8 @@ void AFPSGameMode::FinishMission(APawn* InstigatorPawn)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ViewPoint Class not found. Update GameMode class with valid subclass"));
 		}
-	}
 
-	OnMissionCompleted(InstigatorPawn);
+		OnMissionCompleted(InstigatorPawn, bMissionSuccessed);
+	}
 
 }
