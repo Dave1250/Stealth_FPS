@@ -22,6 +22,8 @@ void AFPSGuardAI::BeginPlay()
 	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSGuardAI::OnPawnSeen);
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSGuardAI::OnNoiseHeard);
+
+	StartRotation = GetActorRotation();
 }
 
 // Called every frame
@@ -43,5 +45,20 @@ void AFPSGuardAI::OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float
 {
 	DrawDebugSphere(GetWorld(), Location, 100.f, 16, FColor::Green, false, 10.f);
 
+	FVector Direction = Location - GetActorLocation();
+	Direction.Normalize();
+
+	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	NewLookAt.Pitch = 0.f;
+	NewLookAt.Roll = 0.f;
+	SetActorRotation(NewLookAt);
+
+
+	GetWorldTimerManager().ClearTimer(TimerHandle_ResetRotation);
+	GetWorldTimerManager().SetTimer(TimerHandle_ResetRotation, this, &AFPSGuardAI::ResetRotation, 2.5f, false);
 }
 
+void AFPSGuardAI::ResetRotation()
+{
+	SetActorRotation(StartRotation);
+}

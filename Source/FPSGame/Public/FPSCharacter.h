@@ -48,10 +48,22 @@ protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
+	UFUNCTION()
 	void Dash();
 
-	float DashTimer;
+	float DashTimer = 0.f;
 
+	UFUNCTION()
+	void StealthMode();
+
+	FTimerHandle TimerHandle_TurnOffStealth;
+
+	UFUNCTION()
+	void TurnOffStealthMode();
+
+	float StealthTimer = 0.f;
+
+	float Noise = 1.f;
 
 public:
 	AFPSCharacter();
@@ -76,6 +88,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Dash")
 		float DashCD = 2.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
+		float StealthCD = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
+		float StealthActiveTime = 5.f;
+
+
 
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1PComponent; }

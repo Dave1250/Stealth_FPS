@@ -32,4 +32,11 @@ protected:
 
 	UFUNCTION()
 	void OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float Volume);
+
+	UFUNCTION()
+	void ResetRotation();
+
+	FRotator StartRotation;
+
+	FTimerHandle TimerHandle_ResetRotation;
 };

@@ -30,8 +30,6 @@ AFPSCharacter::AFPSCharacter()
 	GunMeshComponent->CastShadow = false;
 	GunMeshComponent->SetupAttachment(Mesh1PComponent, "GripPoint");
 
-	DashTimer = 0;
-
 	NoiseEmitterComp = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEmitterComp"));
 }
 
@@ -44,6 +42,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &AFPSCharacter::Dash);
+	PlayerInputComponent->BindAction("Stealth", IE_Pressed, this, &AFPSCharacter::StealthMode);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
@@ -96,6 +95,7 @@ void AFPSCharacter::MoveForward(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorForwardVector(), Value);
+		MakeNoise(Noise, GetInstigator());
 	}
 }
 
@@ -106,6 +106,7 @@ void AFPSCharacter::MoveRight(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
+		MakeNoise(Noise, GetInstigator());
 	}
 }
 
@@ -117,4 +118,20 @@ void AFPSCharacter::Dash()
 		this->LaunchCharacter(DashVelocity, true, false);
 		DashTimer = GetWorld()->GetTimeSeconds() + DashCD;
 	}
+}
+
+void AFPSCharacter::StealthMode()
+{
+	if (GetWorld()->GetTimeSeconds() > StealthTimer)
+	{
+		StealthTimer = GetWorld()->GetTimeSeconds() + StealthCD;
+		Noise = 0.f;
+		GetWorldTimerManager().ClearTimer(TimerHandle_TurnOffStealth);
+		GetWorldTimerManager().SetTimer(TimerHandle_TurnOffStealth, this, &AFPSCharacter::TurnOffStealthMode, StealthActiveTime, false);
+	}
+}
+
+void AFPSCharacter::TurnOffStealthMode()
+{
+	Noise = 1.f;
 }
