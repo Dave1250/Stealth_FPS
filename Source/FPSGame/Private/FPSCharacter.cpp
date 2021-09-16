@@ -31,6 +31,9 @@ AFPSCharacter::AFPSCharacter()
 	GunMeshComponent->SetupAttachment(Mesh1PComponent, "GripPoint");
 
 	NoiseEmitterComp = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEmitterComp"));
+
+	MovmentSpeed = BasicMovmentSpeed;
+	Noise = BasicNoise;
 }
 
 
@@ -94,7 +97,8 @@ void AFPSCharacter::MoveForward(float Value)
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
-		AddMovementInput(GetActorForwardVector(), Value);
+		float Speed = Value * MovmentSpeed;
+		AddMovementInput(GetActorForwardVector(), Speed);
 		MakeNoise(Noise, GetInstigator());
 	}
 }
@@ -105,7 +109,8 @@ void AFPSCharacter::MoveRight(float Value)
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
-		AddMovementInput(GetActorRightVector(), Value);
+		float Speed = Value * MovmentSpeed;
+		AddMovementInput(GetActorRightVector(), Speed);
 		MakeNoise(Noise, GetInstigator());
 	}
 }
@@ -122,16 +127,31 @@ void AFPSCharacter::Dash()
 
 void AFPSCharacter::StealthMode()
 {
-	if (GetWorld()->GetTimeSeconds() > StealthTimer)
+	if (bStealthTurned)
 	{
-		StealthTimer = GetWorld()->GetTimeSeconds() + StealthCD;
-		Noise = 0.f;
-		GetWorldTimerManager().ClearTimer(TimerHandle_TurnOffStealth);
-		GetWorldTimerManager().SetTimer(TimerHandle_TurnOffStealth, this, &AFPSCharacter::TurnOffStealthMode, StealthActiveTime, false);
+		bStealthTurned = false;
+		MovmentSpeed = BasicMovmentSpeed;
+		Noise = BasicNoise;
 	}
+	else
+	{
+		bStealthTurned = true;
+		MovmentSpeed = StealthMovmentSpeed;
+		Noise = StealthNoise;
+	}
+	//if (GetWorld()->GetTimeSeconds() > StealthTimer)
+	//{
+		//StealthTimer = GetWorld()->GetTimeSeconds() + StealthCD;
+		//Noise = 0.f;
+		//GetWorldTimerManager().ClearTimer(TimerHandle_TurnOffStealth);
+		//GetWorldTimerManager().SetTimer(TimerHandle_TurnOffStealth, this, &AFPSCharacter::TurnOffStealthMode, StealthActiveTime, false);
+	//}
 }
 
+/*
 void AFPSCharacter::TurnOffStealthMode()
 {
 	Noise = 1.f;
+	MovmentSpeed = 1.f;
 }
+*/

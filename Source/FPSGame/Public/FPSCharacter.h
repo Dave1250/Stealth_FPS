@@ -56,14 +56,18 @@ protected:
 	UFUNCTION()
 	void StealthMode();
 
-	FTimerHandle TimerHandle_TurnOffStealth;
+	//FTimerHandle TimerHandle_TurnOffStealth;
 
-	UFUNCTION()
-	void TurnOffStealthMode();
+	//UFUNCTION()
+	//void TurnOffStealthMode();
 
-	float StealthTimer = 0.f;
+	//float StealthTimer = 0.f;
 
-	float Noise = 1.f;
+	float Noise;
+
+	float MovmentSpeed;
+
+	bool bStealthTurned = false;
 
 public:
 	AFPSCharacter();
@@ -89,12 +93,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Dash")
 		float DashCD = 2.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
-		float StealthCD = 10.f;
+	//UPROPERTY(EditDefaultsOnly, Category = "Stealth")
+		//float StealthCD = 10.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
-		float StealthActiveTime = 5.f;
+	//UPROPERTY(EditDefaultsOnly, Category = "Stealth")
+		//float StealthActiveTime = 5.f;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movment")
+		float BasicMovmentSpeed = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movment")
+		float BasicNoise = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movment")
+		float StealthMovmentSpeed = 0.2f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movment")
+		float StealthNoise = 0.f;
 
 
 	/** Returns Mesh1P subobject **/
