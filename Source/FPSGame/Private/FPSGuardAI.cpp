@@ -14,6 +14,7 @@ AFPSGuardAI::AFPSGuardAI()
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 
+	GuardState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +40,7 @@ void AFPSGuardAI::OnPawnSeen(APawn* SeenPawn)
 	if (SeenPawn)
 	{
 		//DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 45.f, 12, FColor::Yellow, false, 5.f);
+		SetGuardState(EAIState::Alerted);
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 		if (GM)
 		{
@@ -50,21 +52,39 @@ void AFPSGuardAI::OnPawnSeen(APawn* SeenPawn)
 void AFPSGuardAI::OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float Volume)
 {
 	//DrawDebugSphere(GetWorld(), Location, 100.f, 16, FColor::Green, false, 10.f);
+	if (GuardState != EAIState::Alerted)
+	{
+		FVector Direction = Location - GetActorLocation();
+		Direction.Normalize();
 
-	FVector Direction = Location - GetActorLocation();
-	Direction.Normalize();
-
-	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-	NewLookAt.Pitch = 0.f;
-	NewLookAt.Roll = 0.f;
-	SetActorRotation(NewLookAt);
+		FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+		NewLookAt.Pitch = 0.f;
+		NewLookAt.Roll = 0.f;
+		SetActorRotation(NewLookAt);
 
 
-	GetWorldTimerManager().ClearTimer(TimerHandle_ResetRotation);
-	GetWorldTimerManager().SetTimer(TimerHandle_ResetRotation, this, &AFPSGuardAI::ResetRotation, 2.5f, false);
+		SetGuardState(EAIState::Suspicious);
+
+		GetWorldTimerManager().ClearTimer(TimerHandle_ResetRotation);
+		GetWorldTimerManager().SetTimer(TimerHandle_ResetRotation, this, &AFPSGuardAI::ResetRotation, 2.5f, false);
+	}
 }
 
 void AFPSGuardAI::ResetRotation()
 {
-	SetActorRotation(StartRotation);
+	if (GuardState != EAIState::Alerted)
+	{
+		SetActorRotation(StartRotation);
+		SetGuardState(EAIState::Idle);
+	}
+}
+
+
+void AFPSGuardAI::SetGuardState(EAIState NewState)
+{
+	if (GuardState != NewState)
+	{
+		GuardState = NewState;
+		OnGuardStateChanged(GuardState);
+	}
 }
