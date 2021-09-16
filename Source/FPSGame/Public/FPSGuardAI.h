@@ -55,4 +55,20 @@ protected:
 	void OnGuardStateChanged(EAIState NewState);
 
 	EAIState GuardState;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+		bool bPatrol;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+		AActor* FirstPatrolPoint;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+		AActor* SecondPatrolPoint;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+		AActor* ThirdPatrolPoint;
+
+		AActor* CurrentPatrolPoint;
+
+	void MoveToNextPatrolPoint();
 };

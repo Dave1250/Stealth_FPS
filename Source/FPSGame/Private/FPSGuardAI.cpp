@@ -3,6 +3,7 @@
 
 #include "FPSGuardAI.h"
 #include "FPSGameMode.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Perception/PawnSensingComponent.h"
 
@@ -26,12 +27,28 @@ void AFPSGuardAI::BeginPlay()
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSGuardAI::OnNoiseHeard);
 
 	StartRotation = GetActorRotation();
+
+	if (bPatrol)
+	{
+		MoveToNextPatrolPoint();
+	}
 }
 
 // Called every frame
 void AFPSGuardAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (CurrentPatrolPoint)
+	{
+		FVector Delta = GetActorLocation() - CurrentPatrolPoint->GetActorLocation();
+		float Distance = Delta.Size();
+
+		if (Distance < 100)
+		{
+			MoveToNextPatrolPoint();
+		}
+	}
 
 }
 
@@ -41,6 +58,13 @@ void AFPSGuardAI::OnPawnSeen(APawn* SeenPawn)
 	{
 		//DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 45.f, 12, FColor::Yellow, false, 5.f);
 		SetGuardState(EAIState::Alerted);
+
+		AController* TempController = GetController();
+		if (TempController)
+		{
+			TempController->StopMovement();
+		}
+
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 		if (GM)
 		{
@@ -65,6 +89,19 @@ void AFPSGuardAI::OnNoiseHeard(APawn* SoundMaker, const FVector& Location, float
 
 		SetGuardState(EAIState::Suspicious);
 
+
+
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), Location);
+		FVector Delta = GetActorLocation() - Location;
+		float Distance = Delta.Size();
+		if (Distance < 100)
+		{
+			AController* TempController = GetController();
+			if (TempController)
+			{
+				TempController->StopMovement();
+			}
+		}
 		GetWorldTimerManager().ClearTimer(TimerHandle_ResetRotation);
 		GetWorldTimerManager().SetTimer(TimerHandle_ResetRotation, this, &AFPSGuardAI::ResetRotation, 2.5f, false);
 	}
@@ -76,6 +113,10 @@ void AFPSGuardAI::ResetRotation()
 	{
 		SetActorRotation(StartRotation);
 		SetGuardState(EAIState::Idle);
+		if (bPatrol)
+		{
+			MoveToNextPatrolPoint();
+		}
 	}
 }
 
@@ -87,4 +128,32 @@ void AFPSGuardAI::SetGuardState(EAIState NewState)
 		GuardState = NewState;
 		OnGuardStateChanged(GuardState);
 	}
+}
+
+void AFPSGuardAI::MoveToNextPatrolPoint()
+{
+	AActor* LastPatrolPoint;
+	if (ThirdPatrolPoint)
+	{
+		LastPatrolPoint = ThirdPatrolPoint;
+	}
+	else
+	{
+		LastPatrolPoint = SecondPatrolPoint;
+	}
+
+	if (CurrentPatrolPoint == nullptr || CurrentPatrolPoint == LastPatrolPoint)
+	{
+		CurrentPatrolPoint = FirstPatrolPoint;
+	}
+	else if(CurrentPatrolPoint == FirstPatrolPoint)
+	{
+		CurrentPatrolPoint = SecondPatrolPoint;
+	}
+	else
+	{
+		CurrentPatrolPoint = LastPatrolPoint;
+	}
+
+	UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), CurrentPatrolPoint);
 }
